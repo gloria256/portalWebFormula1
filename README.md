@@ -6,8 +6,8 @@ MAVEN: 2.2.1
 
 ## EJEMPLOS
 
-CRUD TABLA CIRCUITOS:
-  PETICION GET: Obtiene un o todos los registros de la tabla
+CRUD TABLA CIRCUITOS: \n
+  PETICION GET: Obtiene un o todos los registros de la tabla \n
     http://localhost:8087/portalWebFormula1/circuitos
     http://localhost:8087/portalWebFormula1/circuitos/1
   PETICION POST: Inserta datos en la tabla. No colocar Id es autoincremental. Retorna booleano
