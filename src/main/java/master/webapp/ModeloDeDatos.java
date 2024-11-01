@@ -1,6 +1,5 @@
 package master.webapp;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import aj.org.objectweb.asm.Type;
 import master.webapp.entidades.Circuito;
 import master.webapp.repositorios.CircuitoRepositorio;
 
