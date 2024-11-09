@@ -1,6 +1,5 @@
 package master.webapp.entidades;
 
-import java.sql.Blob;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,24 +16,30 @@ public class Circuito {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
+	@Column(nullable = false)
 	private String nombre;
+	
+	@Column(nullable = false)
 	private String ciudad;
+	
+	@Column(nullable = false)
 	private String pais;
 	
 	@Lob //tipo de datos grande
+	@Column(nullable = true)
 	private Byte[] trazado;
 	
-	@Column(name = "numero_vueltas")
+	@Column(name = "numero_vueltas", nullable = false)
 	private Integer numeroVueltas;
 	private Float longitud;
 	
-	@Column(name = "curvas_lentas")
+	@Column(name = "curvas_lentas", nullable = false)
 	private Integer curvasLentas;
 	
-	@Column(name = "curvas_media")
+	@Column(name = "curvas_media", nullable = false)
 	private Integer curvasMedia;
 	
-	@Column(name = "curvas_rapidas")
+	@Column(name = "curvas_rapidas", nullable = false)
 	private Integer curvasRapidas;
 	
 	//----------------------
@@ -74,7 +79,7 @@ public class Circuito {
 	
 	
 	//----------------------
-	//Se generan los Getters
+	//Se generan los Setters
 	//----------------------
 	
 	public void setId(int id) {
