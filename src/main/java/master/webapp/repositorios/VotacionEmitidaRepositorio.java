@@ -10,5 +10,5 @@ import master.webapp.entidades.VotacionEmitida;
 public interface VotacionEmitidaRepositorio extends JpaRepository<VotacionEmitida,Integer>{
 	 List<VotacionEmitida> findByVotacionId(Integer votacionId);
 	 List<VotacionEmitida> findByVotacionIdAndPilotoId(Integer votacionId, Integer pilotoId);
-	 List<VotacionEmitida> findByVotacionEmail(String email);
+	 List<VotacionEmitida> findByEmail(String email);
 }

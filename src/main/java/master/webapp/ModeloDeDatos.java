@@ -301,7 +301,7 @@ public class ModeloDeDatos {
     
     public Boolean existeEmailVotacionEmitida(String email) {
     	try {
-    		List<VotacionEmitida> resultado = this.votacionEmitidaRepositorio.findByVotacionEmail(email);
+    		List<VotacionEmitida> resultado = this.votacionEmitidaRepositorio.findByEmail(email);
     		return true;     
 		} catch (Exception e) {
 	    	System.out.println("No es posible obtener los datos");
