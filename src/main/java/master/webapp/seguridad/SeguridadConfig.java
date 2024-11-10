@@ -74,6 +74,7 @@ public class SeguridadConfig {
                 .and()
                 .authorizeRequests()
                 .requestMatchers("/api/auth/**").permitAll()
+                //.requestMatchers("/api/roles/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic();
