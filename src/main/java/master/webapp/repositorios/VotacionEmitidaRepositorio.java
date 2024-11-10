@@ -11,4 +11,5 @@ public interface VotacionEmitidaRepositorio extends JpaRepository<VotacionEmitid
 	 List<VotacionEmitida> findByVotacionId(Integer votacionId);
 	 List<VotacionEmitida> findByVotacionIdAndPilotoId(Integer votacionId, Integer pilotoId);
 	 List<VotacionEmitida> findByEmail(String email);
+	 boolean existsByEmail(String email);
 }

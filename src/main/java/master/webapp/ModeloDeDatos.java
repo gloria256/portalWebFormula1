@@ -1,8 +1,11 @@
 package master.webapp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -299,19 +302,22 @@ public class ModeloDeDatos {
 		}    			
     }
     
-    public Boolean existeEmailVotacionEmitida(String email) {
-    	try {
-    		List<VotacionEmitida> resultado = this.votacionEmitidaRepositorio.findByEmail(email);
-    		return true;     
-		} catch (Exception e) {
-	    	System.out.println("No es posible obtener los datos");
-	    	System.out.println(e);
-	    	return false;
-		}    			
-    }
+    public Boolean emailValido(String email) {
+	    String EMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+	    if(Pattern.matches(EMAIL_REGEX, email)) {
+	    	return true;
+	    }
+	    return false;
+	}
     
     public Boolean registrarVotacionEmitida(@RequestBody VotacionEmitida votacionEmitida) {
     	try {
+    		//Valida que el email sea vpalido y no haya votado antes 
+    		String email = votacionEmitida.getEmail();
+    		Boolean existeEmail = this.votacionEmitidaRepositorio.existsByEmail(email);
+    		if(existeEmail || !this.emailValido(email)) {
+    			return false;
+    		}
     		VotacionEmitida resultadoPost = this.votacionEmitidaRepositorio.save(votacionEmitida);
     		return true;     
 		} catch (Exception e) {
@@ -356,6 +362,61 @@ public class ModeloDeDatos {
 		}    			
     }
     
+    public ArrayList<Map<String, Object>> obtenerDatosVotacion(Integer id) {
+    	
+    	ArrayList<Map<String, Object>> datosRetornar = new ArrayList<>();
+		List<Votacion> listDatosVotacion = new ArrayList<>();
+		
+		if(id != null) {
+			Optional<Votacion> votacionOptional = this.obtenerUnaVotacion(id);
+			votacionOptional.ifPresent(listDatosVotacion::add); 
+		}else {
+			listDatosVotacion = this.obtenerTodasLasVotaciones();
+		}
+		
+		for (Votacion votacion : listDatosVotacion) {
+			Integer votacionId = votacion.getId();
+			//si existe la votación, busco las votaciones emitidas 
+			//por id de la votación
+			Map<String, Object> mapVotacion = new HashMap<>();
+			mapVotacion.put("id",votacionId);
+			mapVotacion.put("title",votacion.getTitulo());
+			mapVotacion.put("endDate", votacion.getLimite());
+							
+			String textoPilotosVotacion = votacionRepositorio.findListaPilotosById(votacionId);
+			// Eliminar '[' y ']'
+			textoPilotosVotacion = textoPilotosVotacion.substring(1,textoPilotosVotacion.length() - 1);
+	        // Convertir los elementos a Integer y devolverlos en una lista
+	        String[] ListaPilotosVotacion = textoPilotosVotacion.split(",");
+
+			ArrayList<Map<String, Object>> options = new ArrayList<>();
+			//Por cada votacion emitida perteneciente a la votación con ID:id
+			//se extraen los datos de los pilotos y se agregar al retorno.
+			for (String idpiloto : ListaPilotosVotacion) {
+				Integer pilotoId = Integer.parseInt(idpiloto.trim());
+				Map<String, Object> opciones = new HashMap<>();
+				Optional<Piloto> listaDatosPiloto = this.obtenerUnPiloto(pilotoId);
+					
+				if (listaDatosPiloto.isPresent()) {					
+					Piloto datosPiloto = listaDatosPiloto.get();
+					Integer conteoPilotos = this.conteoVotosPorIdVotacionAndIdPiloto(votacionId,pilotoId);
+							
+					opciones.put("id", datosPiloto.getId());
+					opciones.put("name", datosPiloto.getNombre());
+					opciones.put("team", "");
+					opciones.put("votes", conteoPilotos);
+							
+					options.add(opciones);						
+				}
+			}
+				
+			mapVotacion.put("options",options);
+			datosRetornar.add(mapVotacion);
+
+		}
+		
+		return datosRetornar;
+	}
     
     
 }

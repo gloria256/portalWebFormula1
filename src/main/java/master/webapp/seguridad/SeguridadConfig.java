@@ -75,6 +75,7 @@ public class SeguridadConfig {
                 .authorizeRequests()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/roles/**").permitAll()
+                .requestMatchers("/portalWebFormula1/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .httpBasic();
