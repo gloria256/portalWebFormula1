@@ -312,9 +312,9 @@ public class ModeloDeDatos {
     
     public Boolean registrarVotacionEmitida(@RequestBody VotacionEmitida votacionEmitida) {
     	try {
-    		//Valida que el email sea vpalido y no haya votado antes 
+    		//Valida que el email sea válido y no haya votado antes en la votacion especifica
     		String email = votacionEmitida.getEmail();
-    		Boolean existeEmail = this.votacionEmitidaRepositorio.existsByEmail(email);
+    		Boolean existeEmail = this.votacionEmitidaRepositorio.existsByVotacionIdAndEmail(votacionEmitida.getId(),email);
     		if(existeEmail || !this.emailValido(email)) {
     			return false;
     		}
