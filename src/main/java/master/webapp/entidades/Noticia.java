@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Date;
+
 @Getter
 @Setter
 @Entity
@@ -26,5 +28,8 @@ public class Noticia {
     @Lob
     @Column(name = "texto", nullable = false, columnDefinition = "TEXT")
     private String texto;
+
+    @Column(name = "date", nullable = false)
+    private Date date;
 
 }
