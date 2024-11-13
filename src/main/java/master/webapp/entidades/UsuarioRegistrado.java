@@ -36,6 +36,17 @@ public class UsuarioRegistrado {
             inverseJoinColumns = @JoinColumn(name = "rol_id", referencedColumnName = "id"))
     private List<Rol> roles = new ArrayList<>();
 
+	@Column(name = "estado", length = 50)
+	private String estado;
+
+	public String getEstado() {
+		return estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+
 	public Integer getId() {
 		return id;
 	}
@@ -91,7 +102,7 @@ public class UsuarioRegistrado {
 	public void setRoles(List<Rol> roles) {
 		this.roles = roles;
 	}
-    
-    
+
+
 
 }

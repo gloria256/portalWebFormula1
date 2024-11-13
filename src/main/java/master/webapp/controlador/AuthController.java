@@ -56,17 +56,25 @@ public class AuthController {
     
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterDtoIn registerDto) {
+
+        String [] dataCorreo  = registerDto.getEmail().split("@");
+        if (dataCorreo.length == 2){
+            registerDto.setUsername(dataCorreo[0]);
+        } else registerDto.setUsername("");
+
         if (userRepository.existsByUsername(registerDto.getUsername())) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
         }
 
         UsuarioRegistrado user = new UsuarioRegistrado();
-        user.setNombre(registerDto.getUsername());
-        user.setEmail(registerDto.getUsername() + "@gmail.com");
+        user.setEstado("Pendiente");
+        user.setNombre(registerDto.getNombre());
+        user.setEmail(registerDto.getEmail());
         user.setUsername(registerDto.getUsername());
         user.setPassword(passwordEncoder.encode((registerDto.getPassword())));
 
-        Rol roles = roleRepository.findByName("Administrador").orElse(null);
+        Rol roles = roleRepository.findByName("Invitado").orElse(null);
+
         if (roles != null) {
             user.setRoles(Collections.singletonList(roles));
             user.setRol(roles.getName());
@@ -74,7 +82,6 @@ public class AuthController {
 
             return new ResponseEntity<>("User registered success!", HttpStatus.OK);
         }
-
 
         return new ResponseEntity<>("Error!", HttpStatus.FAILED_DEPENDENCY);
     }
