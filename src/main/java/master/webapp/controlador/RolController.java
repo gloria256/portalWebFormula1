@@ -1,8 +1,6 @@
 package master.webapp.controlador;
 
-import master.webapp.entidades.Noticia;
 import master.webapp.entidades.Rol;
-import master.webapp.repositorios.NoticiaRepositorio;
 import master.webapp.repositorios.RolRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +15,7 @@ public class RolController {
     private RolRepository _repository;
 
     @CrossOrigin
-    @GetMapping("/all")
+    @GetMapping({"", "/"})
     public ResponseEntity<List<Rol>> getAll() {
         return ResponseEntity.ok(_repository.findAll());
     }

@@ -1,5 +1,6 @@
 package master.webapp.seguridad;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -75,6 +76,7 @@ public class SeguridadConfig {
                 .authorizeRequests()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/roles/**").permitAll()
+                .requestMatchers("/api/usuarios/**").permitAll()
                 .requestMatchers("/portalWebFormula1/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
@@ -97,5 +99,10 @@ public class SeguridadConfig {
     @Bean
     public  JWTAuthenticationFilter jwtAuthenticationFilter() {
         return new JWTAuthenticationFilter();
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 }
