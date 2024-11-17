@@ -27,11 +27,11 @@ import java.util.Collections;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-    private AuthenticationManager authenticationManager;
-    private UsuarioRegistradoRepository userRepository;
-    private RolRepository roleRepository;
-    private PasswordEncoder passwordEncoder;
-    private JWTGenerator jwtGenerator;
+    private final AuthenticationManager authenticationManager;
+    private final UsuarioRegistradoRepository userRepository;
+    private final RolRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JWTGenerator jwtGenerator;
 
     @Autowired
     public AuthController(AuthenticationManager authenticationManager, UsuarioRegistradoRepository userRepository,
