@@ -21,4 +21,19 @@ public class UsuarioRegistradoDAOImpl implements IUsuarioRegistradoDAO {
     public UsuarioRegistrado getById(Integer eId) {
         return _repository.findById(eId).orElse(null);
     }
+
+    @Override
+    public void save(UsuarioRegistrado eUsuario) {
+        _repository.save(eUsuario);
+    }
+
+    @Override
+    public boolean existsByUsername(String eUsername) {
+        return _repository.existsByUsername(eUsername);
+    }
+
+    @Override
+    public boolean existsByEmail(String eEmail) {
+        return _repository.existsByEmail(eEmail);
+    }
 }

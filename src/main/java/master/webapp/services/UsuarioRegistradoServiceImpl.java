@@ -1,9 +1,17 @@
 package master.webapp.services;
 
+import master.webapp.dao.IRolDAO;
 import master.webapp.dao.IUsuarioRegistradoDAO;
+import master.webapp.dto.UsuarioDtoIn;
 import master.webapp.dto.UsuarioDtoOut;
+import master.webapp.entidades.UsuarioRegistrado;
+import master.webapp.util.ConstantsUtil;
+import master.webapp.util.ErrorUtil;
+import master.webapp.util.ResponseUtil;
+import master.webapp.util.ValidationsUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,11 +19,18 @@ import java.util.stream.Collectors;
 
 @Service
 public class UsuarioRegistradoServiceImpl implements IUsuarioRegistradoService{
-    @Autowired
-    private IUsuarioRegistradoDAO _dao;
+    private final IUsuarioRegistradoDAO _dao;
+    private final IRolDAO _rolDao;
+    private final PasswordEncoder passwordEncoder;
+    private final ModelMapper _modelMapper;
 
     @Autowired
-    private ModelMapper _modelMapper;
+    public UsuarioRegistradoServiceImpl(IUsuarioRegistradoDAO _dao, IRolDAO _rolDao, PasswordEncoder passwordEncoder, ModelMapper _modelMapper) {
+        this._dao = _dao;
+        this._rolDao = _rolDao;
+        this.passwordEncoder = passwordEncoder;
+        this._modelMapper = _modelMapper;
+    }
 
     @Override
     public List<UsuarioDtoOut> getAll() {
@@ -32,6 +47,146 @@ public class UsuarioRegistradoServiceImpl implements IUsuarioRegistradoService{
 
     @Override
     public UsuarioDtoOut getById(Integer eId) {
-        return (_dao.getById(eId) == null) ? null : _modelMapper.map(_dao.getById(eId), UsuarioDtoOut.class);
+        UsuarioRegistrado user = _dao.getById(eId);
+        UsuarioDtoOut dto = null;
+        if (user != null) {
+            dto = _modelMapper.map(user, UsuarioDtoOut.class);
+            dto.setIdRol(!user.getRoles().isEmpty() ? user.getRoles().get(0).getId() : 0);
+        }
+        return dto;
+    }
+
+    @Override
+    public ResponseUtil create(UsuarioDtoIn eUsuario) {
+        ResponseUtil _response = new ResponseUtil();
+        eUsuario.setId(null);
+        if (validate(eUsuario, _response, true)) {
+            UsuarioRegistrado user = _modelMapper.map(eUsuario, UsuarioRegistrado.class);
+            user.getRoles().add(_rolDao.getById(eUsuario.getIdRol()));
+            _dao.save(user);
+        }
+        return _response;
+    }
+
+    @Override
+    public ResponseUtil update(UsuarioDtoIn eUsuario) {
+        ResponseUtil _response = new ResponseUtil();
+        if (validate(eUsuario, _response, false)) {
+            UsuarioRegistrado user = _modelMapper.map(eUsuario, UsuarioRegistrado.class);
+            user.getRoles().add(_rolDao.getById(eUsuario.getIdRol()));
+            _dao.save(user);
+        }
+        return _response;
+    }
+
+    private boolean validate(UsuarioDtoIn eUsuario, ResponseUtil eResponse, boolean eIsNew) {
+        boolean _result = true;
+        UsuarioRegistrado user = _dao.getById(eUsuario.getId() != null ? eUsuario.getId() : 0);
+
+        if (!eIsNew && user == null) {
+            _result = false;
+            eResponse.setStatus(ConstantsUtil.FAILURE);
+            ErrorUtil error = new ErrorUtil();
+            error.setField("object");
+            error.setMessage("No se puede actualizar el usuario");
+            eResponse.getErrors().add(error);
+            return _result;
+        }
+
+        if(eUsuario.getNombre() == null || eUsuario.getNombre().isEmpty()) {
+            _result = false;
+            eResponse.setStatus(ConstantsUtil.FAILURE);
+            ErrorUtil error = new ErrorUtil();
+            error.setField("nombre");
+            error.setMessage("El nombre no puede ser vacio");
+            eResponse.getErrors().add(error);
+        }
+
+        if(eUsuario.getUsername() == null || eUsuario.getUsername().isEmpty()) {
+            _result = false;
+            eResponse.setStatus(ConstantsUtil.FAILURE);
+            ErrorUtil error = new ErrorUtil();
+            error.setField("username");
+            error.setMessage("El username no puede ser vacio");
+            eResponse.getErrors().add(error);
+        }else if(user != null) {
+            if (user.getUsername().compareToIgnoreCase(eUsuario.getUsername()) != 0 &&
+                    _dao.existsByUsername(eUsuario.getUsername())
+            ) {
+                _result = false;
+                eResponse.setStatus(ConstantsUtil.FAILURE);
+                ErrorUtil error = new ErrorUtil();
+                error.setField("username");
+                error.setMessage("Ya existe un usuario con ese username");
+                eResponse.getErrors().add(error);
+            }
+        }else if(_dao.existsByUsername(eUsuario.getUsername())) {
+            _result = false;
+            eResponse.setStatus(ConstantsUtil.FAILURE);
+            ErrorUtil error = new ErrorUtil();
+            error.setField("username");
+            error.setMessage("Ya existe un usuario con ese username");
+            eResponse.getErrors().add(error);
+        }
+
+        if(!ValidationsUtil.emailIsValid(eUsuario.getEmail())) {
+            _result = false;
+            eResponse.setStatus(ConstantsUtil.FAILURE);
+            ErrorUtil error = new ErrorUtil();
+            error.setField("email");
+            error.setMessage("El email no es valido");
+            eResponse.getErrors().add(error);
+        }else if(user != null) {
+            if (user.getEmail().compareToIgnoreCase(eUsuario.getEmail()) != 0 &&
+                    _dao.existsByEmail(eUsuario.getEmail())
+            ) {
+                _result = false;
+                eResponse.setStatus(ConstantsUtil.FAILURE);
+                ErrorUtil error = new ErrorUtil();
+                error.setField("email");
+                error.setMessage("Ya existe un usuario con ese email");
+                eResponse.getErrors().add(error);
+            }
+        }else if(_dao.existsByEmail(eUsuario.getEmail())) {
+            _result = false;
+            eResponse.setStatus(ConstantsUtil.FAILURE);
+            ErrorUtil error = new ErrorUtil();
+            error.setField("email");
+            error.setMessage("Ya existe un usuario con ese email");
+            eResponse.getErrors().add(error);
+        }
+
+        if(user == null && (eUsuario.getPassword() == null || eUsuario.getPassword().isEmpty())) {
+            _result = false;
+            eResponse.setStatus(ConstantsUtil.FAILURE);
+            ErrorUtil error = new ErrorUtil();
+            error.setField("password");
+            error.setMessage("El password no puede ser vacio");
+            eResponse.getErrors().add(error);
+        }else if(user != null &&
+                (eUsuario.getPassword() == null || eUsuario.getPassword().isEmpty())){
+            eUsuario.setPassword(user.getPassword());
+        }else{
+            eUsuario.setPassword(passwordEncoder.encode((eUsuario.getPassword())));
+        }
+
+        if(!ConstantsUtil.states.contains(eUsuario.getEstado() == null ? "" : eUsuario.getEstado())) {
+            _result = false;
+            eResponse.setStatus(ConstantsUtil.FAILURE);
+            ErrorUtil error = new ErrorUtil();
+            error.setField("estado");
+            error.setMessage("El estado no es valido");
+            eResponse.getErrors().add(error);
+        }
+
+        if (eUsuario.getIdRol() == null || _rolDao.getById(eUsuario.getIdRol()) == null) {
+            _result = false;
+            eResponse.setStatus(ConstantsUtil.FAILURE);
+            ErrorUtil error = new ErrorUtil();
+            error.setField("rol");
+            error.setMessage("El rol no es valido");
+            eResponse.getErrors().add(error);
+        }
+        return _result;
     }
 }
