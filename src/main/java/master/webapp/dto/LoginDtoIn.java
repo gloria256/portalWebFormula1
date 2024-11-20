@@ -1,10 +1,5 @@
 package master.webapp.dto;
 
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
-
-
 public class LoginDtoIn {
     private String username;
     private String password;
@@ -20,6 +15,4 @@ public class LoginDtoIn {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-    
-    
 }
