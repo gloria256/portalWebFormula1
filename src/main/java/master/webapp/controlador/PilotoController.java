@@ -3,7 +3,10 @@ package master.webapp.controlador;
 import java.util.List;
 import java.util.Optional;
 
+import master.webapp.dto.UsuarioDtoOut;
+import master.webapp.services.IPilotoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +24,8 @@ import master.webapp.entidades.Piloto;
 public class PilotoController {
 	@Autowired
 	private ModeloDeDatos BD;
+	@Autowired
+	private IPilotoService _service;
 		
 	@CrossOrigin
 	@GetMapping("/piloto")
@@ -50,6 +55,13 @@ public class PilotoController {
 	@DeleteMapping("/piloto")
 	public Boolean eliminarPilotos(@RequestBody List<Piloto> piloto) {
 		return BD.eliminarPilotos(piloto);
+	}
+
+	@CrossOrigin
+	@GetMapping("/pilotos/{eId}")
+	public ResponseEntity<Piloto> getById(@PathVariable("eId") Integer eId) {
+		return (_service.getById(eId) == null) ?
+				ResponseEntity.notFound().build() : ResponseEntity.ok(_service.getById(eId));
 	}
 
 }
