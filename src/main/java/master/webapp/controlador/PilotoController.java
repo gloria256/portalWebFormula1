@@ -3,7 +3,7 @@ package master.webapp.controlador;
 import java.util.List;
 import java.util.Optional;
 
-import master.webapp.dto.UsuarioDtoOut;
+import master.webapp.dto.PilotoDtoOut;
 import master.webapp.services.IPilotoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -57,6 +57,7 @@ public class PilotoController {
 		return BD.eliminarPilotos(piloto);
 	}
 
+
 	@CrossOrigin
 	@GetMapping("/pilotos/{eId}")
 	public ResponseEntity<Piloto> getById(@PathVariable("eId") Integer eId) {
@@ -64,4 +65,9 @@ public class PilotoController {
 				ResponseEntity.notFound().build() : ResponseEntity.ok(_service.getById(eId));
 	}
 
+	@CrossOrigin
+	@GetMapping("/pilotos/equipo/{eEquipoId}")
+	public List<PilotoDtoOut> getAllByEquipoId(@PathVariable("eEquipoId") Integer eEquipoId) {
+		return _service.getAllByEquipoId(eEquipoId);
+	}
 }
