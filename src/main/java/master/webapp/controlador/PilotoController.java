@@ -3,9 +3,13 @@ package master.webapp.controlador;
 import java.util.List;
 import java.util.Optional;
 
+import master.webapp.dto.PilotoDtoIn;
 import master.webapp.dto.PilotoDtoOut;
 import master.webapp.services.IPilotoService;
+import master.webapp.util.ConstantsUtil;
+import master.webapp.util.ResponseUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -69,5 +73,21 @@ public class PilotoController {
 	@GetMapping("/pilotos/equipo/{eEquipoId}")
 	public List<PilotoDtoOut> getAllByEquipoId(@PathVariable("eEquipoId") Integer eEquipoId) {
 		return _service.getAllByEquipoId(eEquipoId);
+	}
+
+	@CrossOrigin
+	@PostMapping(value = {"/pilotos"})
+	public ResponseEntity<ResponseUtil> create(@RequestBody PilotoDtoIn ePiloto) {
+		ResponseUtil _response = _service.create(ePiloto);
+		if (_response.getStatus().compareToIgnoreCase(ConstantsUtil.SUCCESS) == 0) return ResponseEntity.ok(_response);
+		return new ResponseEntity<>(_response, HttpStatus.FAILED_DEPENDENCY);
+	}
+
+	@CrossOrigin
+	@PutMapping(value = {"/pilotos"})
+	public ResponseEntity<ResponseUtil> update(@RequestBody PilotoDtoIn ePiloto) {
+		ResponseUtil _response = _service.update(ePiloto);
+		if (_response.getStatus().compareToIgnoreCase(ConstantsUtil.SUCCESS) == 0) return ResponseEntity.ok(_response);
+		return new ResponseEntity<>(_response, HttpStatus.FAILED_DEPENDENCY);
 	}
 }
