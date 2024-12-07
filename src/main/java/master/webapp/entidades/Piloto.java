@@ -48,7 +48,19 @@ public class Piloto {
 	@JoinColumn(name = "id_equipo")
 	private Equipo equipo;
 
-	public Equipo getEquipo() {
+    @Lob
+    @Column(name = "dataurlb64")
+    private String dataurlb64;
+
+    public String getDataurlb64() {
+        return dataurlb64;
+    }
+
+    public void setDataurlb64(String dataurlb64) {
+        this.dataurlb64 = dataurlb64;
+    }
+
+    public Equipo getEquipo() {
 		return equipo;
 	}
 
