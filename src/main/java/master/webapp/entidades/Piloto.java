@@ -48,7 +48,6 @@ public class Piloto {
 	@JoinColumn(name = "id_equipo")
 	private Equipo equipo;
 
-    @Lob
     @Column(name = "dataurlb64")
     private String dataurlb64;
 
