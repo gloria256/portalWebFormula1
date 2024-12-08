@@ -13,6 +13,15 @@ public class PilotoDtoIn {
     private String pais;
     private String twitter;
     private String dataurlb64;
+    private Integer estado;
+
+    public Integer getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Integer estado) {
+        this.estado = estado;
+    }
 
     public String getDataurlb64() {
         return dataurlb64;

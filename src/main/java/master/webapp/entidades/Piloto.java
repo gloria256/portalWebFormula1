@@ -5,6 +5,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name="piloto")
@@ -51,7 +52,19 @@ public class Piloto {
     @Column(name = "dataurlb64")
     private String dataurlb64;
 
-    public String getDataurlb64() {
+	@ColumnDefault("1")
+	@Column(name = "estado", nullable = false)
+	private Integer estado;
+
+	public Integer getEstado() {
+		return estado;
+	}
+
+	public void setEstado(Integer estado) {
+		this.estado = estado;
+	}
+
+	public String getDataurlb64() {
         return dataurlb64;
     }
 

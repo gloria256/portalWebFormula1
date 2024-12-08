@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,5 +68,11 @@ public class PilotoService implements IPilotoService{
                     return _modelMapper.map(el, PilotoDtoOut.class);
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Boolean existSiglas(String eSiglas, Integer eEstado, Optional<Integer> ePilotoId) {
+        Integer pilotoId = ePilotoId.orElse(0);
+        return pilotoDao.existsSiglasPiloto(eSiglas, eEstado, pilotoId);
     }
 }
