@@ -36,4 +36,14 @@ public class PilotoDaoImpl implements IPilotoDao{
     public List<Piloto> gelAllByEqipoId(Integer eEquipoId) {
         return repositorio.gelAllByEqipoId(eEquipoId);
     }
+
+    @Override
+    public Boolean existsDorsalPiloto(Integer eDorsal, Integer eEstado, Integer eEquipoId, Integer ePilotoId) {
+        return repositorio.existsByDorsalAndEstadoAndEquipoIdAndNotEqualsPilotoId(eDorsal, eEstado, eEquipoId, ePilotoId);
+    }
+
+    @Override
+    public Boolean existsSiglasPiloto(String eSiglas, Integer eEstado, Integer ePilotoId) {
+        return repositorio.existsBySiglasAndEstadoAndNotEqualsPilotoId(eSiglas, eEstado, ePilotoId);
+    }
 }

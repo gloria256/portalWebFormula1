@@ -90,4 +90,11 @@ public class PilotoController {
 		if (_response.getStatus().compareToIgnoreCase(ConstantsUtil.SUCCESS) == 0) return ResponseEntity.ok(_response);
 		return new ResponseEntity<>(_response, HttpStatus.FAILED_DEPENDENCY);
 	}
+
+	@CrossOrigin
+	@GetMapping(value={"/pilotos/{eId}/siglas/{eSigla}/exists", "/pilotos/siglas/{eSigla}/exists"})
+	public ResponseEntity<Boolean> getById(@PathVariable("eId") Optional<Integer> eId, @PathVariable("eSigla") String eSigla) {
+		return ( _service.existSiglas(eSigla, 1, eId) ) ?
+				ResponseEntity.ok(true): ResponseEntity.ok(false);
+	}
 }
