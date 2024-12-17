@@ -1,5 +1,6 @@
 package master.webapp.services;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,12 @@ public class NoticiaServiceImp implements INoticiaService {
         Optional<Noticia> noticia = noticiaRepositorio.findById(id);
         noticia.ifPresent(noticiaRepositorio::delete);
         return noticia;
+    }
+
+    @Override
+    public Noticia addNoticia(Noticia noticia) {
+        noticia.setDate(new Date());
+        return noticiaRepositorio.save(noticia);
     }
 
 }
