@@ -38,4 +38,10 @@ public class NoticiaController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @CrossOrigin
+    @PostMapping("/noticias")
+    public ResponseEntity<Noticia> addNoticia(@RequestBody Noticia noticia) {
+        return ResponseEntity.ok(noticiaServiceImp.addNoticia(noticia));
+    }
+
 }
