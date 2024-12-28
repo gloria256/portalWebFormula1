@@ -27,7 +27,7 @@ public class UserSecurityImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UsuarioRegistrado user = userRepository.findByUsernameOrEmail(username,username).orElseThrow(() -> new UsernameNotFoundException("Username or Email not found"));
+        UsuarioRegistrado user = userRepository.findByUsernameOrEmailAfterAndEstado(username,username,"Aprobado").orElseThrow(() -> new UsernameNotFoundException("Username or Email not found"));
         return new User(user.getUsername(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));
     }
 

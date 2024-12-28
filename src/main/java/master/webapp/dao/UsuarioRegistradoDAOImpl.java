@@ -36,4 +36,9 @@ public class UsuarioRegistradoDAOImpl implements IUsuarioRegistradoDAO {
     public boolean existsByEmail(String eEmail) {
         return _repository.existsByEmail(eEmail);
     }
+
+    @Override
+    public UsuarioRegistrado getByUsernameAndEstado(String eUsername, String eEstado) {
+        return _repository.findByUsernameAndEstado(eUsername, eEstado).orElse(null);
+    }
 }
