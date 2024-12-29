@@ -7,6 +7,7 @@ import master.webapp.entidades.UsuarioRegistrado;
 import master.webapp.util.ConstantsUtil;
 import master.webapp.util.ErrorUtil;
 import master.webapp.util.ResponseUtil;
+import master.webapp.util.ValidationsUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -141,19 +142,25 @@ public class EquipoServiceImpl implements IEquipoService{
         }
 
         if(eEquipo.getLogo() == null || eEquipo.getLogo().isEmpty()) {
-            eResponse.setStatus(ConstantsUtil.FAILURE);
-            ErrorUtil error = new ErrorUtil();
-            error.setField("logo");
-            error.setMessage("El logo no puede ser vacio");
-            eResponse.getErrors().add(error);
+            eEquipo.setLogo(equipo != null ? equipo.getLogo() : null);
         }
 
         if(eEquipo.getTwitter() == null || eEquipo.getTwitter().isEmpty()) {
             eResponse.setStatus(ConstantsUtil.FAILURE);
             ErrorUtil error = new ErrorUtil();
-            error.setField("logo");
+            error.setField("twitter");
             error.setMessage("El twitter no puede ser vacio");
             eResponse.getErrors().add(error);
+        } else {
+            String twitter = eEquipo.getTwitter().replaceAll("@", "");
+            twitter = "@" + twitter;
+            if(!ValidationsUtil.twitterIsValid(twitter)) {
+                eResponse.setStatus(ConstantsUtil.FAILURE);
+                ErrorUtil error = new ErrorUtil();
+                error.setField("twitter");
+                error.setMessage("Twitter no valido");
+                eResponse.getErrors().add(error);
+            } else eEquipo.setTwitter(twitter);
         }
     }
 }

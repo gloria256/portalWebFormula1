@@ -62,6 +62,7 @@ public class SeguridadConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
+                .cors().and()
                 .exceptionHandling()
                 .authenticationEntryPoint(authEntryPoint)
                 .and()
