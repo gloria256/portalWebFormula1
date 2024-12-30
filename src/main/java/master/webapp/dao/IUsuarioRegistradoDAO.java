@@ -11,4 +11,5 @@ public interface IUsuarioRegistradoDAO {
     void save(UsuarioRegistrado eUsuario);
     boolean existsByUsername(String eUsername);
     boolean existsByEmail(String eEmail);
+    UsuarioRegistrado getByUsernameAndEstado(String eUsername, String eEstado);
 }

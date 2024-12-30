@@ -4,6 +4,7 @@ import master.webapp.dao.IRolDAO;
 import master.webapp.dao.IUsuarioRegistradoDAO;
 import master.webapp.dto.UsuarioDtoIn;
 import master.webapp.dto.UsuarioDtoOut;
+import master.webapp.entidades.Rol;
 import master.webapp.entidades.UsuarioRegistrado;
 import master.webapp.util.ConstantsUtil;
 import master.webapp.util.ErrorUtil;
@@ -61,8 +62,7 @@ public class UsuarioRegistradoServiceImpl implements IUsuarioRegistradoService{
         ResponseUtil _response = new ResponseUtil();
         eUsuario.setId(null);
         if (validate(eUsuario, _response, true)) {
-            UsuarioRegistrado user = _modelMapper.map(eUsuario, UsuarioRegistrado.class);
-            user.getRoles().add(_rolDao.getById(eUsuario.getIdRol()));
+            UsuarioRegistrado user = getUserMapper(eUsuario);
             _dao.save(user);
         }
         return _response;
@@ -72,11 +72,19 @@ public class UsuarioRegistradoServiceImpl implements IUsuarioRegistradoService{
     public ResponseUtil update(UsuarioDtoIn eUsuario) {
         ResponseUtil _response = new ResponseUtil();
         if (validate(eUsuario, _response, false)) {
-            UsuarioRegistrado user = _modelMapper.map(eUsuario, UsuarioRegistrado.class);
-            user.getRoles().add(_rolDao.getById(eUsuario.getIdRol()));
-            _dao.save(user);
+            UsuarioRegistrado _user = getUserMapper(eUsuario);
+            _dao.save(_user);
         }
         return _response;
+    }
+
+    private UsuarioRegistrado getUserMapper(UsuarioDtoIn eUsuario) {
+        UsuarioRegistrado user = _modelMapper.map(eUsuario, UsuarioRegistrado.class);
+        Rol rol = _rolDao.getById(eUsuario.getIdRol());
+        user.getRoles().clear();
+        user.getRoles().add(rol);
+        user.setRol(rol.getName());
+        return user;
     }
 
     private boolean validate(UsuarioDtoIn eUsuario, ResponseUtil eResponse, boolean eIsNew) {
@@ -179,7 +187,8 @@ public class UsuarioRegistradoServiceImpl implements IUsuarioRegistradoService{
             eResponse.getErrors().add(error);
         }
 
-        if (eUsuario.getIdRol() == null || _rolDao.getById(eUsuario.getIdRol()) == null) {
+        Rol rol = _rolDao.getById(eUsuario.getIdRol() != null ? eUsuario.getIdRol() : 0);
+        if (rol == null) {
             _result = false;
             eResponse.setStatus(ConstantsUtil.FAILURE);
             ErrorUtil error = new ErrorUtil();

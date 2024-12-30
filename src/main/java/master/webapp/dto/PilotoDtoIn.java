@@ -12,6 +12,24 @@ public class PilotoDtoIn {
     private Byte[] foto;
     private String pais;
     private String twitter;
+    private String dataurlb64;
+    private Integer estado;
+
+    public Integer getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Integer estado) {
+        this.estado = estado;
+    }
+
+    public String getDataurlb64() {
+        return dataurlb64;
+    }
+
+    public void setDataurlb64(String dataurlb64) {
+        this.dataurlb64 = dataurlb64;
+    }
 
     public String getApellidos() {
         return apellidos;

@@ -62,6 +62,7 @@ public class SeguridadConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
+                .cors().and()
                 .exceptionHandling()
                 .authenticationEntryPoint(authEntryPoint)
                 .and()
@@ -72,6 +73,7 @@ public class SeguridadConfig {
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/roles/**").permitAll()
                 .requestMatchers("/api/usuarios/**").permitAll()
+                .requestMatchers("/api/equipos/**").hasAnyAuthority("Administrador","Equipo")
                 .requestMatchers("/portalWebFormula1/**").permitAll()
                 .anyRequest().authenticated()
                 .and()

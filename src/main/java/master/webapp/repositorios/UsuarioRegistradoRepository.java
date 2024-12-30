@@ -11,5 +11,6 @@ public interface UsuarioRegistradoRepository extends JpaRepository<UsuarioRegist
     Boolean existsByUsername(String username);
     Boolean existsByEmail(String email);
     Boolean existsByUsernameOrEmail(String username, String email);
-    Optional<UsuarioRegistrado> findByUsernameOrEmail(String username, String email);
+    Optional<UsuarioRegistrado> findByUsernameOrEmailAfterAndEstado(String username, String email, String estado);
+    Optional<UsuarioRegistrado> findByUsernameAndEstado(String username, String estado);
 }

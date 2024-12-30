@@ -6,6 +6,15 @@ public class PilotoDtoOut {
     private String apellidos;
     private String siglas;
     private Integer dorsal;
+    private Integer estado;
+
+    public Integer getEstado() {
+        return estado;
+    }
+
+    public void setEstado(Integer estado) {
+        this.estado = estado;
+    }
 
     public String getApellidos() {
         return apellidos;
