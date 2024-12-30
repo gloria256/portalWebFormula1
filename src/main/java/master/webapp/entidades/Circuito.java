@@ -16,18 +16,18 @@ public class Circuito {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 	
-	@Column(nullable = false)
+	@Column(nullable = false,length=255)
 	private String nombre;
 	
-	@Column(nullable = false)
+	@Column(nullable = false,length=255)
 	private String ciudad;
 	
-	@Column(nullable = false)
+	@Column(nullable = false,length=255)
 	private String pais;
 	
 	@Lob //tipo de datos grande
-	@Column(nullable = true)
-	private Byte[] trazado;
+	@Column(nullable = true, columnDefinition="LONGTEXT")
+	private String trazado;
 	
 	@Column(name = "numero_vueltas", nullable = false)
 	private Integer numeroVueltas;
@@ -58,7 +58,7 @@ public class Circuito {
 	public String getPais() {
 		return pais;
 	}
-	public Byte[] getTrazado() {
+	public String getTrazado() {
 		return trazado;
 	}
 	public int getNumeroVueltas() {
@@ -94,7 +94,7 @@ public class Circuito {
 	public void setPais(String pais) {
 		this.pais = pais;
 	}
-	public void setTrazado(Byte[] trazado) {
+	public void setTrazado(String trazado) {
 		this.trazado = trazado;
 	}
 	public void setNumeroVueltas(int numero_vueltas) {
