@@ -1,5 +1,7 @@
 package master.webapp.entidades;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -42,6 +44,8 @@ public class Circuito {
 	@Column(name = "curvas_rapidas", nullable = false)
 	private Integer curvasRapidas;
 	
+	@Column(name = "fecha", nullable = true)
+	private LocalDate fecha;
 	//----------------------
 	//Se generan los Getters
 	//----------------------
@@ -76,6 +80,10 @@ public class Circuito {
 	public int getCurvasRapidas() {
 		return curvasRapidas;
 	}
+	public LocalDate getFecha() {
+		return fecha;
+	}
+	
 	
 	
 	//----------------------
@@ -112,5 +120,8 @@ public class Circuito {
 	public void setCurvasRapidas(int curvas_rapidas) {
 		this.curvasRapidas = curvas_rapidas;
 	}	
+	public void setFecha(LocalDate fecha) {
+		this.fecha = fecha;
+	}
 
 }
