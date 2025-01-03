@@ -39,4 +39,9 @@ public class NoticiaServiceImp implements INoticiaService {
         return noticiaRepositorio.save(noticia);
     }
 
+    @Override
+    public Noticia updateNoticia(Noticia noticia) {
+        return noticiaRepositorio.save(noticia);
+    }
+
 }

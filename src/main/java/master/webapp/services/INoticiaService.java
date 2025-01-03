@@ -11,4 +11,5 @@ public interface INoticiaService {
     Optional<Noticia> findNoticiaById(Integer id);
     Optional<Noticia> deleteNoticiaById(Integer id);
     Noticia addNoticia(Noticia noticia);
+    Noticia updateNoticia(Noticia noticia);
 }

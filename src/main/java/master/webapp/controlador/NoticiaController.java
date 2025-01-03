@@ -44,4 +44,10 @@ public class NoticiaController {
         return ResponseEntity.ok(noticiaServiceImp.addNoticia(noticia));
     }
 
+    @CrossOrigin
+    @PutMapping("/noticias/{id}")
+    public ResponseEntity<Noticia> updateNoticia(@RequestBody Noticia noticia) {
+        return ResponseEntity.ok(noticiaServiceImp.updateNoticia(noticia));
+    }
+
 }
