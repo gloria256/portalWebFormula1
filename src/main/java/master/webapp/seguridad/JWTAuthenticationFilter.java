@@ -27,6 +27,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
+        //adiciono el  Verificar si la ruta está permitida sin autenticación JWT
+      /*  if (shouldNotFilter(request)) {
+            filterChain.doFilter(request, response);
+            return;
+        }*/
+
+        // Si el token está presente y es válido, proceder con la autenticación
         String token = getJWTFromRequest(request);
         if(StringUtils.hasText(token) && tokenGenerator.validateToken(token)) {
             String username = tokenGenerator.getUsernameFromJWT(token);
@@ -39,6 +47,14 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         }
         filterChain.doFilter(request, response);
     }
+
+    //adiciono validacion rutas sin autenticacion
+   /* @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        // Rutas que no requieren autenticación JWT
+        String path = request.getRequestURI();
+        return path.startsWith("/portalWebFormula1/") || path.startsWith("/consumo/");
+    }*/
 
     private String getJWTFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
