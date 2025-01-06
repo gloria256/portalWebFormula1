@@ -8,4 +8,5 @@ import master.webapp.entidades.Coche;
 @Repository
 public interface CocheRepositorio extends JpaRepository<Coche,Integer>{
 
+    Coche findByCodigo(String codigoCoche);
 }

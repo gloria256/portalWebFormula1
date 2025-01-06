@@ -7,4 +7,5 @@ import master.webapp.entidades.Circuito;
 @Repository
 public interface CircuitoRepositorio extends JpaRepository<Circuito,Integer>{
 
+    Circuito findByNombre(String nombreCircuito);
 }
