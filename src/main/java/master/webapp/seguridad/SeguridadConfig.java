@@ -70,7 +70,8 @@ public class SeguridadConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .requestMatchers("/consumo/**").permitAll() // Permitir acceso sin autenticación
+                .requestMatchers("/consumo/**").permitAll() // Permitir acceso sin autenticación consumo
+                .requestMatchers("/ers/**").permitAll() // Permitir acceso sin autenticación ers
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/roles/**").permitAll()
                 .requestMatchers("/api/usuarios/**").permitAll()

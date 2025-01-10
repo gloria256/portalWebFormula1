@@ -9,6 +9,7 @@ import master.webapp.services.ConsumoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
 
 
 @RestController
@@ -31,16 +32,16 @@ public class ConsumoController {
                                     @PathVariable double margen) {
         // Buscar coche y circuito en la base de datos
         Coche coche = cocheRepositorio.findByCodigo(codigoCoche);
-        Circuito circuito = circuitoRepositorio.findByNombre(nombreCircuito);
+        Optional<Circuito> circuito = circuitoRepositorio.findByNombre(nombreCircuito);
 
-        if (coche == null || circuito == null) {
+        if (coche == null || circuito.isEmpty()) {
             return "Coche o Circuito no encontrados en la base de datos.";
         }
 
         // Calcular consumos
-        double consumoPorVuelta = consumoService.calcularConsumoPorVuelta(coche, circuito);
-        double consumoTotal = consumoService.calcularConsumoTotal(coche, circuito);
-        double combustibleOptimo = consumoService.calcularCombustibleOptimo(coche, circuito, margen);
+        double consumoPorVuelta = consumoService.calcularConsumoPorVuelta(coche, circuito.orElse(null));
+        double consumoTotal = consumoService.calcularConsumoTotal(coche, circuito.orElse(null));
+        double combustibleOptimo = consumoService.calcularCombustibleOptimo(coche, circuito.orElse(null), margen);
 
         // Formatear respuesta
         return String.format(
@@ -51,7 +52,7 @@ public class ConsumoController {
                         "Consumo total: %.2f L%n" +
                         "Combustible óptimo (%.2f%% margen): %.2f L",
                 coche.getNombre(),
-                circuito.getNombre(),
+                circuito.get().getNombre(),
                 consumoPorVuelta,
                 consumoTotal,
                 margen,
