@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collections;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -32,7 +33,7 @@ public class AuthController {
 
     @Autowired
     public AuthController(AuthenticationManager authenticationManager, UsuarioRegistradoRepository userRepository,
-                          RolRepository roleRepository, PasswordEncoder passwordEncoder, JWTGenerator jwtGenerator) {
+            RolRepository roleRepository, PasswordEncoder passwordEncoder, JWTGenerator jwtGenerator) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
@@ -42,24 +43,28 @@ public class AuthController {
 
     @CrossOrigin
     @PostMapping("/login")
-    public ResponseEntity<LoginDtoOut> login(@RequestBody LoginDtoIn loginDto){
+    public ResponseEntity<LoginDtoOut> login(@RequestBody LoginDtoIn loginDto) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginDto.getUsername(),
                         loginDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtGenerator.generateToken(authentication);
-        return new ResponseEntity<>(new LoginDtoOut(token), HttpStatus.OK);
+        Optional<UsuarioRegistrado> user = userRepository.findByUsername(loginDto.getUsername());
+        if (user.isEmpty())
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new LoginDtoOut(token, user), HttpStatus.OK);
     }
 
     @CrossOrigin
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody RegisterDtoIn registerDto) {
 
-        String [] dataCorreo  = registerDto.getEmail().split("@");
-        if (dataCorreo.length == 2){
+        String[] dataCorreo = registerDto.getEmail().split("@");
+        if (dataCorreo.length == 2) {
             registerDto.setUsername(dataCorreo[0]);
-        } else registerDto.setUsername("");
+        } else
+            registerDto.setUsername("");
 
         if (userRepository.existsByUsernameOrEmail(registerDto.getUsername(), registerDto.getUsername())) {
             return new ResponseEntity<>("Username or Email ya existe!", HttpStatus.BAD_REQUEST);

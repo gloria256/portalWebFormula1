@@ -50,6 +50,14 @@ public class UsuarioRegistradoController {
         if (_response.getStatus().compareToIgnoreCase(ConstantsUtil.SUCCESS) == 0) return ResponseEntity.ok(_response);
         return new ResponseEntity<>(_response, HttpStatus.FAILED_DEPENDENCY);
     }
+
+    @CrossOrigin
+    @DeleteMapping(value = {"", "/"})
+    public ResponseEntity<ResponseUtil> delete(@RequestBody UsuarioDtoIn eUsuario) {
+        ResponseUtil _response = _service.delete(eUsuario);
+        if (_response.getStatus().compareToIgnoreCase(ConstantsUtil.SUCCESS) == 0) return ResponseEntity.ok(_response);
+        return new ResponseEntity<>(_response, HttpStatus.FAILED_DEPENDENCY);
+    }
 }
 
 
