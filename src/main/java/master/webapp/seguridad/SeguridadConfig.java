@@ -74,7 +74,7 @@ public class SeguridadConfig {
                 .requestMatchers("/ers/**").permitAll() // Permitir acceso sin autenticación ers
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/roles/**").permitAll()
-                .requestMatchers("/api/usuarios/**").permitAll()
+                .requestMatchers("/api/usuarios/**").authenticated()
                 .requestMatchers("/api/equipos/**").hasAnyAuthority("Administrador","Equipo")
                 .requestMatchers("/portalWebFormula1/**").permitAll()
                 .anyRequest().authenticated()

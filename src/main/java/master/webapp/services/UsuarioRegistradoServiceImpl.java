@@ -78,6 +78,16 @@ public class UsuarioRegistradoServiceImpl implements IUsuarioRegistradoService{
         return _response;
     }
 
+    @Override
+    public ResponseUtil delete(UsuarioDtoIn eUsuario) {
+        ResponseUtil _response = new ResponseUtil();
+        if (validate(eUsuario, _response, false)) {
+            UsuarioRegistrado _user = getUserMapper(eUsuario);
+            _dao.delete(_user);
+        }
+        return _response;
+    }
+
     private UsuarioRegistrado getUserMapper(UsuarioDtoIn eUsuario) {
         UsuarioRegistrado user = _modelMapper.map(eUsuario, UsuarioRegistrado.class);
         Rol rol = _rolDao.getById(eUsuario.getIdRol());
