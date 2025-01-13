@@ -28,6 +28,9 @@ public class UsuarioRegistradoDAOImpl implements IUsuarioRegistradoDAO {
     }
 
     @Override
+    public void delete(UsuarioRegistrado eUsuario) {_repository.delete(eUsuario); }
+
+    @Override
     public boolean existsByUsername(String eUsername) {
         return _repository.existsByUsername(eUsername);
     }

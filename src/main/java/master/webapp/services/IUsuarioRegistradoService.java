@@ -11,4 +11,5 @@ public interface IUsuarioRegistradoService {
     UsuarioDtoOut getById(Integer eId);
     ResponseUtil create(UsuarioDtoIn eUsuario);
     ResponseUtil update(UsuarioDtoIn eUsuario);
+    ResponseUtil delete(UsuarioDtoIn eUsuario);
 }
