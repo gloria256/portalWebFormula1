@@ -1,9 +1,12 @@
 package master.webapp.controlador;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import master.webapp.ModeloDeDatos;
 import master.webapp.entidades.Circuito;
+import master.webapp.util.ConstantsUtil;
+import master.webapp.util.ResponseUtil;
 
 @RestController
 @RequestMapping("/portalWebFormula1")
@@ -48,8 +53,8 @@ public class CircuitoController {
 	
 	@CrossOrigin
 	@DeleteMapping("/circuitos")
-	public Boolean eliminarCircuitos(@RequestBody List<Circuito> circuito) {
-		return BD.eliminarCircuitos(circuito);
+	public ResponseEntity<Map<String, Object>>  eliminarCircuitos(@RequestBody Integer idCircuito) {
+		return BD.eliminarCircuito(idCircuito);
 	}
 
 }

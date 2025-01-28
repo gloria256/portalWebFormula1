@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -98,14 +99,34 @@ public class ModeloDeDatos {
 		}
 	}
 
-	public Boolean eliminarCircuitos(@RequestBody List<Circuito> circuito) {
+	public ResponseEntity<Map<String, Object>> eliminarCircuito(Integer idCircuito) {
+		Map<String, Object> error = new HashMap<>();
 		try {
-			this.circuitoRepositorio.deleteAll(circuito);
-			return true;
+			Boolean existeRegistro = this.circuitoRepositorio.existsById(idCircuito);
+			Map<String, Object> response = new HashMap<>();
+			Optional<Circuito> circuito = this.circuitoRepositorio.findById(idCircuito);
+			
+			/*Si el circuito está en calendario no eliminar*/
+			if (circuito.isPresent()) {
+				if(circuito.get().getFecha() == null) {
+					this.circuitoRepositorio.deleteById(idCircuito);
+					response.put("mensage","El circuito ha sido eliminado con exito");
+					return ResponseEntity.ok(response);
+				}else {
+		            error.put("error", "El circuito se encuentra en el calendario. No es posible eliminarlo");
+		            return ResponseEntity.badRequest().body(error);
+				}
+				
+			}else {
+				error.put("error", "El circuito, no existe en la base de datos");
+	            return ResponseEntity.badRequest().body(error);
+			}
+			
 		} catch (Exception e) {
 			System.out.println("No es posible eliminar");
 			System.out.println(e);
-			return false;
+			error.put("error", "Falla interna. No es posible eliminar");
+            return ResponseEntity.badRequest().body(error);
 		}
 	}
 
