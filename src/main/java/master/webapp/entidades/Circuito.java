@@ -33,6 +33,7 @@ public class Circuito {
 	
 	@Column(name = "numero_vueltas", nullable = false)
 	private Integer numeroVueltas;
+	
 	private Float longitud;
 	
 	@Column(name = "curvas_lentas", nullable = false)

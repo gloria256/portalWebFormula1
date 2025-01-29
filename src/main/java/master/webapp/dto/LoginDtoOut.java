@@ -11,7 +11,15 @@ import master.webapp.entidades.UsuarioRegistrado;
 @Getter
 @Setter
 public class LoginDtoOut {
-    private String accessToken;
+    public Optional<UsuarioRegistrado> getUser() {
+		return user;
+	}
+
+	public void setUser(Optional<UsuarioRegistrado> user) {
+		this.user = user;
+	}
+
+	private String accessToken;
     private String tokenType = "Bearer ";
     private Optional<UsuarioRegistrado> user;
 

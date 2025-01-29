@@ -63,7 +63,7 @@ public class ModeloDeDatos {
 		}
 	}
 
-	public Boolean agregarCircuitos(@RequestBody List<Circuito> circuito) {
+	/*public Boolean agregarCircuito(@RequestBody List<Circuito> circuito) {
 		try {
 			List<Circuito> resultadoPost = this.circuitoRepositorio.saveAll(circuito);
 			Boolean resultado = resultadoPost.isEmpty() ? false : true;
@@ -73,41 +73,79 @@ public class ModeloDeDatos {
 			System.out.println(e);
 			return false;
 		}
-	}
-
-	public List<Circuito> actualizarCircuitos(@RequestBody List<Circuito> circuito) {
-		List<Circuito> registrosActualizados = new ArrayList<>();
-		Integer id;
-		Boolean existeRegistro;
+	}*/
+	
+	public ResponseEntity<Map<String, Object>> agregarCircuito(@RequestBody Circuito circuito) {
+		Map<String, Object> error = new HashMap<>();
 		try {
-			/* Si existe lo actualiza, devuelve los actualizados */
-			for (Circuito elemento : circuito) {
-				id = elemento.getId();
-				existeRegistro = this.circuitoRepositorio.existsById(id);
-				if (existeRegistro) {
-					Circuito resultadoPUT = this.circuitoRepositorio.save(elemento);
-					registrosActualizados.add(elemento);
-				}
-
-			}
-
-			return registrosActualizados;
+			Map<String, Object> response = new HashMap<>();
+			Circuito resultadoPost = this.circuitoRepositorio.save(circuito);
+			System.out.println("AGREGAR CIRCUITO CON EXITO");
+			response.put("mensage","El circuito ha sido agregado con exito");
+			return ResponseEntity.ok(response);
 		} catch (Exception e) {
-			System.out.println("No es posible actualizar");
+			System.out.println("No es posible guardar los datos del o los circuitos");
 			System.out.println(e);
-			return new ArrayList<>();
+			
+			error.put("error", "No es posible agregar el circuito a la base de datos");
+            return ResponseEntity.badRequest().body(error);
 		}
 	}
 
-	public ResponseEntity<Map<String, Object>> eliminarCircuito(Integer idCircuito) {
+	public ResponseEntity<Map<String, Object>> actualizarCircuito(@RequestBody Circuito circuito) {
+		Integer id;
+		Boolean existeRegistro;
+		Map<String, Object> response = new HashMap<>();
+		Map<String, Object> error = new HashMap<>();
+		try {
+			System.out.println(circuito.getCiudad());
+			System.out.println(circuito.getId());
+			/* Si existe lo actualiza */
+			id = circuito.getId();
+			existeRegistro = this.circuitoRepositorio.existsById(id);
+			if (existeRegistro) {
+				Circuito newCircuit = new Circuito();
+				newCircuit.setId(id);
+				newCircuit.setCiudad(circuito.getCiudad());
+				newCircuit.setCurvasLentas(circuito.getCurvasLentas());
+				newCircuit.setCurvasMedia(circuito.getCurvasMedia());
+				newCircuit.setCurvasRapidas(circuito.getCurvasRapidas());
+				newCircuit.setFecha(circuito.getFecha());
+				newCircuit.setLongitud(circuito.getLongitud());
+				newCircuit.setNombre(circuito.getNombre());
+				newCircuit.setNumeroVueltas(circuito.getNumeroVueltas());
+				newCircuit.setPais(circuito.getPais());
+				newCircuit.setTrazado(circuito.getTrazado());
+				
+				Circuito resultadoPUT = this.circuitoRepositorio.save(newCircuit);
+				response.put("mensage","El circuito ha sido actualizado con exito");
+				return ResponseEntity.ok(response);
+			}else {
+				error.put("error", "El circuito No se encuentra en la base de datos");
+	            return ResponseEntity.badRequest().body(error);
+			}
+
+		} catch (Exception e) {
+			System.out.println("No es posible actualizar");
+			System.out.println(e);
+			error.put("error", "No es posible actualizar");
+            return ResponseEntity.badRequest().body(error);
+		}
+	}
+
+	public ResponseEntity<Map<String, Object>> eliminarCircuito(@RequestBody Integer idCircuito) {
 		Map<String, Object> error = new HashMap<>();
 		try {
 			Boolean existeRegistro = this.circuitoRepositorio.existsById(idCircuito);
 			Map<String, Object> response = new HashMap<>();
 			Optional<Circuito> circuito = this.circuitoRepositorio.findById(idCircuito);
 			
+			System.out.println("ENTRE A ELIMINAR CIRCUITO");
+			System.out.println(idCircuito);
+			
 			/*Si el circuito está en calendario no eliminar*/
 			if (circuito.isPresent()) {
+				System.out.println(circuito.get().getFecha());
 				if(circuito.get().getFecha() == null) {
 					this.circuitoRepositorio.deleteById(idCircuito);
 					response.put("mensage","El circuito ha sido eliminado con exito");

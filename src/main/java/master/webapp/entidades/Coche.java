@@ -20,6 +20,70 @@ import lombok.Setter;
 @Table(name = "coche")
 public class Coche {
 
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getCodigo() {
+		return codigo;
+	}
+
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
+	}
+
+	public Float getConsumo() {
+		return consumo;
+	}
+
+	public void setConsumo(Float consumo) {
+		this.consumo = consumo;
+	}
+
+	public Float getErsCurvaLenta() {
+		return ersCurvaLenta;
+	}
+
+	public void setErsCurvaLenta(Float ersCurvaLenta) {
+		this.ersCurvaLenta = ersCurvaLenta;
+	}
+
+	public Float getErsCurvaMedia() {
+		return ersCurvaMedia;
+	}
+
+	public void setErsCurvaMedia(Float ersCurvaMedia) {
+		this.ersCurvaMedia = ersCurvaMedia;
+	}
+
+	public Float getErdCurvaRapidas() {
+		return erdCurvaRapidas;
+	}
+
+	public void setErdCurvaRapidas(Float erdCurvaRapidas) {
+		this.erdCurvaRapidas = erdCurvaRapidas;
+	}
+
+	public Piloto getPiloto() {
+		return piloto;
+	}
+
+	public void setPiloto(Piloto piloto) {
+		this.piloto = piloto;
+	}
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;

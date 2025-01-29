@@ -10,8 +10,6 @@ import lombok.Setter;
 
 import org.hibernate.annotations.ColumnDefault;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "piloto")
 public class Piloto {
@@ -79,4 +77,110 @@ public class Piloto {
 			getVotacion().remove(votacion);
 		}
 	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getNombre() {
+		return nombre;
+	}
+
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
+
+	public String getApellidos() {
+		return apellidos;
+	}
+
+	public void setApellidos(String apellidos) {
+		this.apellidos = apellidos;
+	}
+
+	public String getSiglas() {
+		return siglas;
+	}
+
+	public void setSiglas(String siglas) {
+		this.siglas = siglas;
+	}
+
+	public Integer getDorsal() {
+		return dorsal;
+	}
+
+	public void setDorsal(Integer dorsal) {
+		this.dorsal = dorsal;
+	}
+
+	public Byte[] getFoto() {
+		return foto;
+	}
+
+	public void setFoto(Byte[] foto) {
+		this.foto = foto;
+	}
+
+	public String getPais() {
+		return pais;
+	}
+
+	public void setPais(String pais) {
+		this.pais = pais;
+	}
+
+	public String getTwitter() {
+		return twitter;
+	}
+
+	public void setTwitter(String twitter) {
+		this.twitter = twitter;
+	}
+
+	public List<Votacion> getVotacion() {
+		return votacion;
+	}
+
+	public void setVotacion(List<Votacion> votacion) {
+		this.votacion = votacion;
+	}
+
+	public Equipo getEquipo() {
+		return equipo;
+	}
+
+	public void setEquipo(Equipo equipo) {
+		this.equipo = equipo;
+	}
+
+	public String getDataurlb64() {
+		return dataurlb64;
+	}
+
+	public void setDataurlb64(String dataurlb64) {
+		this.dataurlb64 = dataurlb64;
+	}
+
+	public Integer getEstado() {
+		return estado;
+	}
+
+	public void setEstado(Integer estado) {
+		this.estado = estado;
+	}
+
+	public Coche getCoche() {
+		return coche;
+	}
+
+	public void setCoche(Coche coche) {
+		this.coche = coche;
+	}
+	
+	
 }

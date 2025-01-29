@@ -51,8 +51,9 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtGenerator.generateToken(authentication);
         Optional<UsuarioRegistrado> user = userRepository.findByUsername(loginDto.getUsername());
-        if (user.isEmpty())
+        if (user.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         return new ResponseEntity<>(new LoginDtoOut(token, user), HttpStatus.OK);
     }
 

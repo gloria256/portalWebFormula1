@@ -41,19 +41,22 @@ public class CircuitoController {
 	
 	@CrossOrigin
 	@PostMapping("/circuitos")
-	public Boolean agregarCircuitos(@RequestBody List<Circuito> circuito) {
-		return BD.agregarCircuitos(circuito);
+	public ResponseEntity<Map<String, Object>> agregarCircuitos(@RequestBody Circuito circuito) {
+		System.out.println("AGREGAR CIRCUITO");
+		return BD.agregarCircuito(circuito);
 	}
 	
 	@CrossOrigin
 	@PutMapping("/circuitos")
-	public List<Circuito> actualizarCircuitos(@RequestBody List<Circuito> circuito) {
-		return BD.actualizarCircuitos(circuito);
+	public ResponseEntity<Map<String, Object>> actualizarCircuitos(@RequestBody Circuito circuito) {
+		return BD.actualizarCircuito(circuito);
 	}
 	
 	@CrossOrigin
 	@DeleteMapping("/circuitos")
 	public ResponseEntity<Map<String, Object>>  eliminarCircuitos(@RequestBody Integer idCircuito) {
+		System.out.println("ENTRE A BACK");
+		System.out.println(idCircuito);
 		return BD.eliminarCircuito(idCircuito);
 	}
 
