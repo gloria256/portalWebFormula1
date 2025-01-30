@@ -42,7 +42,7 @@ public class VotacionesController {
 	@PostMapping("/votacion")
 	public ResponseEntity<String>  registrarVotacion(@RequestBody List<Votacion> votacion) {
 		if(BD.registrarVotacion(votacion)) {
-			return new ResponseEntity<>("Eliminacion exitosa", HttpStatus.OK);
+			return new ResponseEntity<>("votacion agregada con exito", HttpStatus.OK);
 		}
 		return new ResponseEntity<>("Error", HttpStatus.BAD_REQUEST);
 	}

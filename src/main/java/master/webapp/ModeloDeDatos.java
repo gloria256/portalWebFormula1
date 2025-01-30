@@ -247,7 +247,32 @@ public class ModeloDeDatos {
 
 	public List<Votacion> obtenerTodasLasVotaciones() {
 		try {
-			return this.votacionRepositorio.findAll();
+			List<Votacion> listDatosVotacion = this.votacionRepositorio.findAll();
+			
+			for (Votacion votacion : listDatosVotacion) {
+
+				String textoPilotosVotacion = votacion.getListaPilotos();
+				List<Piloto> pilotos = new ArrayList<Piloto>();
+				
+				// Eliminar '[' y ']'
+				textoPilotosVotacion = textoPilotosVotacion.substring(1, textoPilotosVotacion.length() - 1);
+				// Convertir los elementos a Integer y devolverlos en una lista
+				String[] ListaPilotosVotacion = textoPilotosVotacion.split(",");
+				
+				//Por cada id sacar los datos del piloto
+				for (String idpiloto : ListaPilotosVotacion) {
+					Integer pilotoId = Integer.parseInt(idpiloto.trim());
+					Optional<Piloto> piloto = this.obtenerUnPiloto(pilotoId);
+
+					if (piloto.isPresent()) {
+						pilotos.add(piloto.get());
+					}
+				}
+				
+				votacion.setPiloto(pilotos);
+			}
+			return listDatosVotacion;
+			
 		} catch (Exception e) {
 			System.out.println("No es posible obtener los datos de todas las votaciones");
 			System.out.println(e);
