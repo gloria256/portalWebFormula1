@@ -2,13 +2,17 @@ package master.webapp.services;
 
 import master.webapp.dao.IEquipoDao;
 import master.webapp.dao.IPilotoDao;
+import master.webapp.dao.IUsuarioRegistradoDAO;
 import master.webapp.dto.PilotoDtoIn;
 import master.webapp.dto.PilotoDtoOut;
 import master.webapp.entidades.Equipo;
 import master.webapp.entidades.Piloto;
+import master.webapp.entidades.UsuarioRegistrado;
 import master.webapp.util.ResponseUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,12 +25,16 @@ public class PilotoService implements IPilotoService{
     private final IPilotoDao pilotoDao;
     private final ModelMapper _modelMapper;
     private final IEquipoDao equipoDao;
+    private final IUsuarioRegistradoDAO usuarioRegistradoDao;
+    private Boolean isRolEquipo = false;
+    private Integer UsuarioLoginId = 0;
 
     @Autowired
-    public PilotoService(IPilotoDao pilotoDao, ModelMapper modelMapper, IEquipoDao equipoDao) {
+    public PilotoService(IPilotoDao pilotoDao, ModelMapper modelMapper, IEquipoDao equipoDao, IUsuarioRegistradoDAO usuarioRegistradoDao) {
         this.pilotoDao = pilotoDao;
         this._modelMapper = modelMapper;
         this.equipoDao = equipoDao;
+        this.usuarioRegistradoDao = usuarioRegistradoDao;
     }
 
     @Override
@@ -38,7 +46,9 @@ public class PilotoService implements IPilotoService{
     public ResponseUtil create(PilotoDtoIn ePiloto) {
         ResponseUtil _response = new ResponseUtil();
         ePiloto.setId(null);
-        Equipo equipo = equipoDao.getById(1); // SOL TMP
+        // Get EquipoLogin
+        int equipoId = getEquipoIdByUserLogin(0);
+        Equipo equipo = equipoDao.getById(equipoId); // SOL TMP
         Piloto data = _modelMapper.map(ePiloto, Piloto.class);
         data.setEquipo(equipo);
         pilotoDao.save(data);
@@ -50,7 +60,8 @@ public class PilotoService implements IPilotoService{
     public ResponseUtil update(PilotoDtoIn ePiloto) {
         ResponseUtil _response = new ResponseUtil();
         Piloto db = pilotoDao.getById(ePiloto.getId());
-        Equipo equipo = equipoDao.getById(1); // SOL TMP
+        int equipoId = getEquipoIdByUserLogin(0);
+        Equipo equipo = equipoDao.getById(equipoId);
         if (db != null) {
             Piloto data = _modelMapper.map(ePiloto, Piloto.class);
             if (data.getDataurlb64().isEmpty()) data.setDataurlb64(db.getDataurlb64());
@@ -68,7 +79,8 @@ public class PilotoService implements IPilotoService{
     @Override
     public List<PilotoDtoOut> getAllByEquipoId(Integer eEquipoId) {
         // Cambiar y tomar el equipoId del usuario logeado
-        return pilotoDao.gelAllByEqipoId(eEquipoId)
+        int equipoId = getEquipoIdByUserLogin(0);
+        return pilotoDao.gelAllByEqipoId(equipoId)
                 .stream()
                 .map(el -> {
                     return _modelMapper.map(el, PilotoDtoOut.class);
@@ -80,5 +92,33 @@ public class PilotoService implements IPilotoService{
     public Boolean existSiglas(String eSiglas, Integer eEstado, Optional<Integer> ePilotoId) {
         Integer pilotoId = ePilotoId.orElse(0);
         return pilotoDao.existsSiglasPiloto(eSiglas, eEstado, pilotoId);
+    }
+
+    private Integer getEquipoIdByUserLogin(Integer eId) {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            UsuarioRegistrado userLogin = usuarioRegistradoDao.getByUsernameAndEstado(username, "Aprobado");
+            if(userLogin != null){
+                UsuarioLoginId = userLogin.getId();
+                // Verifica si tiene rol Equipo
+                userLogin.getRoles().forEach(role -> {
+                    if(role.getName().compareToIgnoreCase("Equipo") == 0){
+                        isRolEquipo = true;
+                    }
+                });
+                // Si el usuario tiene rol Equipo, se busca si tiene rol asignado
+                if(isRolEquipo){
+                    Equipo equipoUserLogin = equipoDao.getByResponsableId(userLogin.getId());
+                    if(equipoUserLogin != null){
+                        eId = equipoUserLogin.getId() != null ? equipoUserLogin.getId() : 0;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            UsuarioLoginId = 0;
+            isRolEquipo = false;
+        }
+        return eId != null ? eId : 0; // provicional se saca de token -> user -> equipo
     }
 }

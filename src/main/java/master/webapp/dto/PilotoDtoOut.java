@@ -7,6 +7,24 @@ public class PilotoDtoOut {
     private String siglas;
     private Integer dorsal;
     private Integer estado;
+    private String pais;
+    private String dataurlb64;
+
+    public String getDataurlb64() {
+        return dataurlb64;
+    }
+
+    public void setDataurlb64(String dataurlb64) {
+        this.dataurlb64 = dataurlb64;
+    }
+
+    public String getPais() {
+        return pais;
+    }
+
+    public void setPais(String pais) {
+        this.pais = pais;
+    }
 
     public Integer getEstado() {
         return estado;
