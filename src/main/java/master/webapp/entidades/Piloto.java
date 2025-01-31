@@ -52,7 +52,7 @@ public class Piloto {
 	@JoinColumn(name = "id_equipo")
 	private Equipo equipo;
 
-	@Column(name = "dataurlb64")
+	@Column(name = "dataurlb64", columnDefinition="LONGTEXT")
 	private String dataurlb64;
 
 	@ColumnDefault("1")

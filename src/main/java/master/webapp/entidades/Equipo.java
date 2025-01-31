@@ -25,7 +25,7 @@ public class Equipo {
     private String twitter;
 
     @Lob
-    @Column(name = "logo")
+    @Column(name = "logo", columnDefinition="LONGTEXT")
     private String logo;
 
     @ManyToMany(fetch = FetchType.LAZY)
