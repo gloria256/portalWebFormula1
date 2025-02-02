@@ -46,4 +46,9 @@ public class PilotoDaoImpl implements IPilotoDao{
     public Boolean existsSiglasPiloto(String eSiglas, Integer eEstado, Integer ePilotoId) {
         return repositorio.existsBySiglasAndEstadoAndNotEqualsPilotoId(eSiglas, eEstado, ePilotoId);
     }
+
+    @Override
+    public void delete(Piloto ePiloto) {
+        repositorio.delete(ePiloto);
+    }
 }

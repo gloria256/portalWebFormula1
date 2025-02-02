@@ -8,6 +8,8 @@ import master.webapp.dto.PilotoDtoOut;
 import master.webapp.entidades.Equipo;
 import master.webapp.entidades.Piloto;
 import master.webapp.entidades.UsuarioRegistrado;
+import master.webapp.util.ConstantsUtil;
+import master.webapp.util.ErrorUtil;
 import master.webapp.util.ResponseUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,6 +94,24 @@ public class PilotoService implements IPilotoService{
     public Boolean existSiglas(String eSiglas, Integer eEstado, Optional<Integer> ePilotoId) {
         Integer pilotoId = ePilotoId.orElse(0);
         return pilotoDao.existsSiglasPiloto(eSiglas, eEstado, pilotoId);
+    }
+
+    @Override
+    public ResponseUtil delete(Integer eId) {
+        ResponseUtil _response = new ResponseUtil();
+        Piloto db = pilotoDao.getById(eId);
+        try{
+            if (db != null) {
+                pilotoDao.delete(db);
+            } else {
+                _response.setStatus(ConstantsUtil.FAILURE);
+                _response.getErrors().add(new ErrorUtil("object", "Piloto no encontrado"));
+            }
+        }catch(Exception ex){
+            _response.setStatus(ConstantsUtil.FAILURE);
+            _response.getErrors().add(new ErrorUtil("object", "Piloto relacionado con otras entidades"));
+        }
+        return _response;
     }
 
     private Integer getEquipoIdByUserLogin(Integer eId) {

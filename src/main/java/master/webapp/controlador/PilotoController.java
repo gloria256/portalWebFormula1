@@ -97,4 +97,12 @@ public class PilotoController {
 		return ( _service.existSiglas(eSigla, 1, eId) ) ?
 				ResponseEntity.ok(true): ResponseEntity.ok(false);
 	}
+
+	@CrossOrigin
+	@DeleteMapping("/piloto/{id}")
+	public ResponseEntity<ResponseUtil> delete(@PathVariable("id") Integer id) {
+		ResponseUtil _response = _service.delete(id);
+		if (_response.getStatus().compareToIgnoreCase(ConstantsUtil.SUCCESS) == 0) return ResponseEntity.ok(_response);
+		return new ResponseEntity<>(_response, HttpStatus.FAILED_DEPENDENCY);
+	}
 }
