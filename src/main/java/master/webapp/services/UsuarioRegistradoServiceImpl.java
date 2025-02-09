@@ -1,9 +1,11 @@
 package master.webapp.services;
 
+import master.webapp.dao.IEquipoDao;
 import master.webapp.dao.IRolDAO;
 import master.webapp.dao.IUsuarioRegistradoDAO;
 import master.webapp.dto.UsuarioDtoIn;
 import master.webapp.dto.UsuarioDtoOut;
+import master.webapp.entidades.Equipo;
 import master.webapp.entidades.Rol;
 import master.webapp.entidades.UsuarioRegistrado;
 import master.webapp.util.ConstantsUtil;
@@ -12,25 +14,34 @@ import master.webapp.util.ResponseUtil;
 import master.webapp.util.ValidationsUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 @Service
 public class UsuarioRegistradoServiceImpl implements IUsuarioRegistradoService{
     private final IUsuarioRegistradoDAO _dao;
     private final IRolDAO _rolDao;
+    private final IEquipoDao equipoDao;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper _modelMapper;
+    private Boolean isRolEquipo = false;
+    private int idRolEquipo = 0;
+    private int idUsuarioLogin = 0;
 
     @Autowired
-    public UsuarioRegistradoServiceImpl(IUsuarioRegistradoDAO _dao, IRolDAO _rolDao, PasswordEncoder passwordEncoder, ModelMapper _modelMapper) {
+    public UsuarioRegistradoServiceImpl(IUsuarioRegistradoDAO _dao, IRolDAO _rolDao, PasswordEncoder passwordEncoder, ModelMapper _modelMapper,
+                                        IEquipoDao equipoDao) {
         this._dao = _dao;
         this._rolDao = _rolDao;
         this.passwordEncoder = passwordEncoder;
         this._modelMapper = _modelMapper;
+        this.equipoDao = equipoDao;
     }
 
     @Override
@@ -81,11 +92,121 @@ public class UsuarioRegistradoServiceImpl implements IUsuarioRegistradoService{
     @Override
     public ResponseUtil delete(UsuarioDtoIn eUsuario) {
         ResponseUtil _response = new ResponseUtil();
+        AtomicBoolean _tieneRolEquipo = new AtomicBoolean(false);
         if (validate(eUsuario, _response, false)) {
             UsuarioRegistrado _user = getUserMapper(eUsuario);
+            // Si el usuario tiene rol de EQUIPO, borramos como responsable
+            UsuarioRegistrado user = _dao.getById(_user.getId());
+            user.getRoles().forEach(role -> {
+                if (role.getName().compareToIgnoreCase("Equipo")==0) {
+                    _tieneRolEquipo.set(true);
+                }
+            });
+            if (_tieneRolEquipo.get()) {
+                Equipo miEquipo = equipoDao.getByResponsableId(user.getId());
+                if (miEquipo != null) {
+                    miEquipo.getResponsables().remove(user);
+                    equipoDao.save(miEquipo);
+                }
+            }
             _dao.delete(_user);
         }
         return _response;
+    }
+
+    @Override
+    public ResponseUtil addResponsableEquipo(UsuarioDtoIn eUsuario) {
+        ResponseUtil _response = new ResponseUtil();
+        int equipoIdByUserLogin = getEquipoIdByUserLogin();
+        eUsuario.setEstado(ConstantsUtil.STATE_APPROVED);
+        eUsuario.setIdRol(idRolEquipo);
+        if (equipoIdByUserLogin > 0) {
+            eUsuario.setId(null);
+            if (validate(eUsuario, _response, true)) {
+                UsuarioRegistrado user = getUserMapper(eUsuario);
+                UsuarioRegistrado userDB = _dao.save(user);
+                Equipo equipo = equipoDao.getById(equipoIdByUserLogin);
+                equipo.getResponsables().add(userDB);
+                equipoDao.save(equipo);
+            }
+        } else {
+            _response.setStatus(ConstantsUtil.FAILURE);
+            _response.getErrors().add(new ErrorUtil("equipo", "El equipo no puede ser nulo"));
+        }
+        return _response;
+    }
+
+    @Override
+    public ResponseUtil updateResponsableEquipo(UsuarioDtoIn eUsuario) {
+        ResponseUtil _response = new ResponseUtil();
+        int equipoIdByUserLogin = getEquipoIdByUserLogin();
+        eUsuario.setEstado(ConstantsUtil.STATE_APPROVED);
+        eUsuario.setIdRol(idRolEquipo);
+        if (equipoIdByUserLogin > 0) {
+            if (validate(eUsuario, _response, false)) {
+                UsuarioRegistrado user = getUserMapper(eUsuario);
+                Equipo equipo = equipoDao.getById(equipoIdByUserLogin);
+                UsuarioRegistrado userResp = equipo.getResponsables().stream().filter(data -> data.getId().intValue() == eUsuario.getId().intValue()).findFirst().orElse(null);
+                if (userResp != null) {
+                    _dao.save(user);
+                } else {
+                    _response.setStatus(ConstantsUtil.FAILURE);
+                    _response.getErrors().add(new ErrorUtil("responsable", "Responsable no pertenece a su equipo"));
+                }
+            }
+        } else {
+            _response.setStatus(ConstantsUtil.FAILURE);
+            _response.getErrors().add(new ErrorUtil("equipo", "El equipo no puede ser nulo"));
+        }
+        return _response;
+    }
+
+    @Override
+    public ResponseUtil deleteResponsableEquipo(int eUsuarioId) {
+        ResponseUtil _response = new ResponseUtil();
+        UsuarioRegistrado user = _dao.getById(eUsuarioId);
+        int equipoIdByUserLogin = getEquipoIdByUserLogin();
+        if (user != null) {
+            Equipo equipo = equipoDao.getById(equipoIdByUserLogin);
+            if (equipo != null) {
+                UsuarioRegistrado userResp = equipo.getResponsables().stream().filter(data -> data.getId().intValue() == user.getId().intValue()).findFirst().orElse(null);
+                if (userResp != null) {
+                    try{
+                        equipo.getResponsables().remove(user); // removemos el responsable del equipo
+                        equipoDao.save(equipo); // actualizamos
+                        _dao.delete(user); // elimina el usuario
+                    }catch(Exception err) {
+                        _response.setStatus(ConstantsUtil.FAILURE);
+                        _response.getErrors().add(new ErrorUtil("object", "Error al eliminar usuario"));
+                    }
+                }else {
+                    _response.setStatus(ConstantsUtil.FAILURE);
+                    _response.getErrors().add(new ErrorUtil("responsable", "Responsable no pertenece a su equipo"));
+                }
+            }else {
+                _response.setStatus(ConstantsUtil.FAILURE);
+                _response.getErrors().add(new ErrorUtil("equipo", "El equipo no puede ser nulo"));
+            }
+        }else {
+            _response.setStatus(ConstantsUtil.FAILURE);
+            _response.getErrors().add(new ErrorUtil("responsable", "El responsable no existe"));
+        }
+        return _response;
+    }
+
+    @Override
+    public List<UsuarioDtoOut> findByEquipoId() {
+        int equipoIdByUserLogin = getEquipoIdByUserLogin();
+        return _dao.findByEquipoId(equipoIdByUserLogin, ConstantsUtil.STATE_APPROVED)
+                .stream()
+                .filter(u -> u.getId() != idUsuarioLogin)
+                .map(user -> {
+                    UsuarioDtoOut dto = _modelMapper.map(user, UsuarioDtoOut.class);
+                    dto.setRol(!user.getRoles().isEmpty() ? user.getRoles().get(0).getName() : "");
+                    dto.setIdRol(!user.getRoles().isEmpty() ? user.getRoles().get(0).getId() : 0);
+                    return dto;
+                })
+                .collect(Collectors.toList());
     }
 
     private UsuarioRegistrado getUserMapper(UsuarioDtoIn eUsuario) {
@@ -207,5 +328,34 @@ public class UsuarioRegistradoServiceImpl implements IUsuarioRegistradoService{
             eResponse.getErrors().add(error);
         }
         return _result;
+    }
+
+    private Integer getEquipoIdByUserLogin() {
+        int equipoId = 0;
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            UsuarioRegistrado userLogin = _dao.getByUsernameAndEstado(username, "Aprobado");
+            if(userLogin != null){
+                // Verifica si tiene rol Equipo
+                idUsuarioLogin = userLogin.getId();
+                userLogin.getRoles().forEach(role -> {
+                    if(role.getName().compareToIgnoreCase("Equipo") == 0){
+                        isRolEquipo = true;
+                        idRolEquipo = role.getId();
+                    }
+                });
+                // Si el usuario tiene rol Equipo, se busca si tiene rol asignado
+                if(isRolEquipo){
+                    Equipo equipoUserLogin = equipoDao.getByResponsableId(userLogin.getId());
+                    if(equipoUserLogin != null){
+                        equipoId = equipoUserLogin.getId() != null ? equipoUserLogin.getId() : 0;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            isRolEquipo = false;
+        }
+        return equipoId;
     }
 }

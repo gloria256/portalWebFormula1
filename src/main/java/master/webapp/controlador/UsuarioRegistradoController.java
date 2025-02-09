@@ -58,6 +58,36 @@ public class UsuarioRegistradoController {
         if (_response.getStatus().compareToIgnoreCase(ConstantsUtil.SUCCESS) == 0) return ResponseEntity.ok(_response);
         return new ResponseEntity<>(_response, HttpStatus.FAILED_DEPENDENCY);
     }
+
+    @CrossOrigin
+    @GetMapping({"/by/equipo", "/by/equipo/"})
+    public ResponseEntity<List<UsuarioDtoOut>> getAllByEquipo() {
+        return ResponseEntity.ok(_service.findByEquipoId());
+    }
+
+    @CrossOrigin
+    @PostMapping(value = {"/by/equipo", "/by/equipo/"})
+    public ResponseEntity<ResponseUtil> createByEquipo(@RequestBody UsuarioDtoIn eUsuario) {
+        ResponseUtil _response = _service.addResponsableEquipo(eUsuario);
+        if (_response.getStatus().compareToIgnoreCase(ConstantsUtil.SUCCESS) == 0) return ResponseEntity.ok(_response);
+        return new ResponseEntity<>(_response, HttpStatus.FAILED_DEPENDENCY);
+    }
+
+    @CrossOrigin
+    @PutMapping(value = {"/by/equipo", "/by/equipo/"})
+    public ResponseEntity<ResponseUtil> updateResponsableEquipo(@RequestBody UsuarioDtoIn eUsuario) {
+        ResponseUtil _response = _service.updateResponsableEquipo(eUsuario);
+        if (_response.getStatus().compareToIgnoreCase(ConstantsUtil.SUCCESS) == 0) return ResponseEntity.ok(_response);
+        return new ResponseEntity<>(_response, HttpStatus.FAILED_DEPENDENCY);
+    }
+
+    @CrossOrigin
+    @DeleteMapping("/{id}/by/equipo")
+    public ResponseEntity<ResponseUtil> deleteResponsableEquipo(@PathVariable("id") Integer id) {
+        ResponseUtil _response = _service.deleteResponsableEquipo(id);
+        if (_response.getStatus().compareToIgnoreCase(ConstantsUtil.SUCCESS) == 0) return ResponseEntity.ok(_response);
+        return new ResponseEntity<>(_response, HttpStatus.FAILED_DEPENDENCY);
+    }
 }
 
 

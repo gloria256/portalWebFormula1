@@ -12,4 +12,8 @@ public interface IUsuarioRegistradoService {
     ResponseUtil create(UsuarioDtoIn eUsuario);
     ResponseUtil update(UsuarioDtoIn eUsuario);
     ResponseUtil delete(UsuarioDtoIn eUsuario);
+    ResponseUtil addResponsableEquipo(UsuarioDtoIn eUsuario);
+    ResponseUtil updateResponsableEquipo(UsuarioDtoIn eUsuario);
+    ResponseUtil deleteResponsableEquipo(int eUsuarioId);
+    List<UsuarioDtoOut> findByEquipoId();
 }

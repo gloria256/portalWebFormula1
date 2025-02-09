@@ -23,8 +23,8 @@ public class UsuarioRegistradoDAOImpl implements IUsuarioRegistradoDAO {
     }
 
     @Override
-    public void save(UsuarioRegistrado eUsuario) {
-        _repository.save(eUsuario);
+    public UsuarioRegistrado save(UsuarioRegistrado eUsuario) {
+        return _repository.save(eUsuario);
     }
 
     @Override
@@ -43,5 +43,10 @@ public class UsuarioRegistradoDAOImpl implements IUsuarioRegistradoDAO {
     @Override
     public UsuarioRegistrado getByUsernameAndEstado(String eUsername, String eEstado) {
         return _repository.findByUsernameAndEstado(eUsername, eEstado).orElse(null);
+    }
+
+    @Override
+    public List<UsuarioRegistrado> findByEquipoId(Integer eEquipoId, String eEstado) {
+        return _repository.findByEquipoId(eEquipoId, eEstado);
     }
 }
