@@ -283,8 +283,35 @@ public class ModeloDeDatos {
 	public Optional<Votacion> obtenerUnaVotacion(Integer id) {
 		try {
 			Optional<Votacion> resultado = this.votacionRepositorio.findById(id);
-			resultado = resultado.isPresent() ? resultado : Optional.empty();
-			return resultado;
+			if(resultado.isPresent()) {
+				Votacion votacion = resultado.get();
+				
+				String textoPilotosVotacion = votacion.getListaPilotos();
+				List<Piloto> pilotos = new ArrayList<Piloto>();
+					
+				// Eliminar '[' y ']'
+				textoPilotosVotacion = textoPilotosVotacion.substring(1, textoPilotosVotacion.length() - 1);
+				// Convertir los elementos a Integer y devolverlos en una lista
+				String[] ListaPilotosVotacion = textoPilotosVotacion.split(",");
+					
+				//Por cada id sacar los datos del piloto
+				for (String idpiloto : ListaPilotosVotacion) {
+					Integer pilotoId = Integer.parseInt(idpiloto.trim());
+					Optional<Piloto> piloto = this.obtenerUnPiloto(pilotoId);
+
+					if (piloto.isPresent()) {
+						pilotos.add(piloto.get());
+					}
+				}
+				
+				votacion.setPiloto(pilotos);
+				return resultado;
+
+			}else {
+				return Optional.empty();
+			}
+			
+
 		} catch (Exception e) {
 			System.out.println("No es posible obtener los datos de la votación con Id: " + id);
 			System.out.println(e);
